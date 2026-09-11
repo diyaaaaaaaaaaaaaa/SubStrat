@@ -1,0 +1,49 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "delegatee",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes",
+          "name": "result",
+          "type": "bytes"
+        }
+      ],
+      "name": "Simulated",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "delegatee",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "simulate",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600e575f5ffd5b5061020d8061001c5f395ff3fe60806040526004361061001d575f3560e01c8063bd61951d14610021575b5f5ffd5b61003461002f3660046100c0565b610036565b005b5f5f846001600160a01b0316848460405161005292919061014b565b5f60405180830381855af49150503d805f811461008a576040519150601f19603f3d011682016040523d82523d5f602084013e61008f565b606091505b5091509150848484848460405163ade1913960e01b81526004016100b795949392919061015a565b60405180910390fd5b5f5f5f604084860312156100d2575f5ffd5b83356001600160a01b03811681146100e8575f5ffd5b9250602084013567ffffffffffffffff811115610103575f5ffd5b8401601f81018613610113575f5ffd5b803567ffffffffffffffff811115610129575f5ffd5b86602082840101111561013a575f5ffd5b939660209190910195509293505050565b818382375f9101908152919050565b6001600160a01b03861681526080602082018190528101849052838560a08301375f60a085830101525f601f19601f8601168201841515604084015260a083820301606084015283518060a0830152806020860160c084015e5f60c0838301810191909152601f909101601f19169091010197965050505050505056fea26469706673582212209ccec787104441496eddf122a021fc8f020986a62efb4095f611a4bfd841e75364736f6c634300081e0033"
+}

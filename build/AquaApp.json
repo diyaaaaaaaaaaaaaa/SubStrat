@@ -1,0 +1,75 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "maker",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "strategyHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "salt",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "app",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "actualThis",
+          "type": "address"
+        }
+      ],
+      "name": "InvalidAquaStrategy",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MissingNonReentrantModifier",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "newBalance",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "expectedBalance",
+          "type": "uint256"
+        }
+      ],
+      "name": "MissingTakerAquaPush",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AQUA",
+      "outputs": [
+        {
+          "internalType": "contract IAqua",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x"
+}

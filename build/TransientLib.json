@@ -1,0 +1,15 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "MathOverflow",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MathUnderflow",
+      "type": "error"
+    }
+  ],
+  "bytecode": "0x60556032600b8282823980515f1a607314602657634e487b7160e01b5f525f60045260245ffd5b305f52607381538281f3fe730000000000000000000000000000000000000000301460806040525f5ffdfea26469706673582212200e4abe24e996dca83047eaac343ee99caca10e477ebcadceb5271a30f66d789464736f6c634300081e0033"
+}

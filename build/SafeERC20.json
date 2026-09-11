@@ -1,0 +1,40 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "ForceApproveFailed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "Permit2TransferAmountTooHigh",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SafeDecreaseAllowanceFailed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SafeIncreaseAllowanceFailed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SafePermitBadLength",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SafeTransferFailed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SafeTransferFromFailed",
+      "type": "error"
+    }
+  ],
+  "bytecode": "0x60556032600b8282823980515f1a607314602657634e487b7160e01b5f525f60045260245ffd5b305f52607381538281f3fe730000000000000000000000000000000000000000301460806040525f5ffdfea26469706673582212202b6860c714ef75537c458a21ba882cbe1d8e8bab9d906c32dcf758cdd7e75a5764736f6c634300081e0033"
+}
