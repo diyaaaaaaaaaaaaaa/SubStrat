@@ -31,7 +31,7 @@ function walk(dir, files = []) {
 const solFiles = walk(CONTRACTS);
 const sources = {};
 for (const f of solFiles) {
-  const rel = path.relative(CONTRACTS, f);
+  const rel = path.relative(CONTRACTS, f).split(path.sep).join("/");
   sources[rel] = { content: fs.readFileSync(f, "utf8") };
 }
 
