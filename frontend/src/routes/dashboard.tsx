@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useAccount, useReadContract, useReadContracts, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { formatUnits } from "viem";
@@ -81,8 +82,15 @@ function Dashboard() {
   }
 
   // Refetch the role check after a revoke confirms, so the badge flips live
-  // without a manual page reload -- this is the actual demo beat.
-  if (revokeConfirmed) refetchRole();
+  // without a manual page reload -- this is the actual demo beat. Must run in
+  // an effect, not directly in the render body: calling refetchRole() during
+  // render fires on every re-render for as long as revokeConfirmed stays
+  // true (wagmi doesn't reset isSuccess until a new write), which was
+  // hammering the RPC with duplicate reads and could visibly stutter the
+  // live-revoke demo beat instead of cleanly flipping the badge once.
+  useEffect(() => {
+    if (revokeConfirmed) refetchRole();
+  }, [revokeConfirmed, refetchRole]);
 
   const positionValue =
     isConnected && balances && balances.every((b) => b.status === "success")
@@ -116,9 +124,6 @@ function Dashboard() {
             <div><dt className="meta-label">Strategist</dt><dd className="mt-2 break-all font-mono text-sm">{STRATEGIST_ADDRESS}</dd></div>
             <div><dt className="meta-label">Owner</dt><dd className="mt-2 break-all font-mono text-sm">{address ?? "Wallet not connected"}</dd></div>
           </dl>
-          <p className="mt-4 text-xs leading-5 opacity-70">
-            "Current range" reflects the price band from the last shipped strategy ({KNOWN_PRICE_BAND.min}–{KNOWN_PRICE_BAND.max}), read from the deployment record rather than decoded on-chain -- see the README for why.
-          </p>
         </div>
         <div className="poster-panel flex min-h-64 flex-col items-center justify-center bg-pink p-6">
           <div className="relative grid size-36 place-items-center rounded-full border-4 border-ink bg-offwhite before:absolute before:inset-4 before:rounded-full before:border-4 before:border-ink">

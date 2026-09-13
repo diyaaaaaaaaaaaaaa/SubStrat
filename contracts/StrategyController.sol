@@ -15,12 +15,6 @@ import { SubStratRoles } from "./SubStratRoles.sol";
 ///         params -- never a withdrawal. Revoking that role (on the ENS side, independent
 ///         of this contract) kills their access immediately -- no code change, no
 ///         cooperation from anyone needed.
-///
-/// @dev SPIKE 2 STATUS: the gate below reads a real ENSv2 Enhanced Access Control role,
-///      via `PERMISSIONS`/`MANDATE_RESOURCE` set at construction. `PERMISSIONS` currently
-///      points at `SubStratPermissions` (our own deployed instance of ENS's real EAC base
-///      contract) rather than a live-registered ENS name's actual Permissioned Resolver --
-///      that swap is a later step and only changes which contract address this reads from.
 contract StrategyController is Ownable {
     IAqua public immutable AQUA;
     address public immutable APP;

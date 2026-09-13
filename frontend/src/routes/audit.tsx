@@ -95,7 +95,7 @@ function Audit() {
         </a>
         <a
           className="poster-panel bg-offwhite p-4 text-center font-mono text-xs underline"
-          href={`https://explorer.ens.dev/name/${ENS_NAME}`}
+          href={`https://explorer.ens.dev/${ENS_NAME}/resolver`}
           target="_blank" rel="noreferrer"
         >
           Resolve {ENS_NAME} on ENS explorer
