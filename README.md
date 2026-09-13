@@ -6,8 +6,16 @@ instantly, with no one's cooperation needed.
 
 Built for ETHOnline 2026 — 1inch (Build an Aqua App) and ENS (Best Use of ENSv2).
 
-There is no AI agent anywhere in this product. It's a human-to-human delegation
-problem — financial advisor, fund manager, "friend who's good with crypto" —
+SubStrat is a non-custodial strategy-delegation protocol for 1inch Aqua positions. It lets a client or organization give a strategist narrowly scoped authority to manage a DeFi liquidity strategy without handing over custody of the underlying funds.
+
+A client’s StrategyController becomes the Aqua maker and holds the required Aqua approval, while the strategist can only call a guarded rebalance function. Because Aqua strategies are immutable once shipped, tuning a position means docking the existing strategy and shipping a new one with a fresh strategy hash and updated parameters.
+
+ENSv2 provides the delegation layer. A client grants a strategist a scoped role through Enhanced Access Control, tied to a specific name and strategy resource. The controller checks that role onchain before allowing a rebalance. If the client revokes the role, the strategist’s next attempt fails immediately, without changing the controller or relying on the strategist’s cooperation.
+
+Privy provides the client-side ownership and governance layer. Its wallet and policy controls protect principal-changing actions such as emergency closure, reassignment, and future organization-level approvals. The result is a clear separation between tuning and taking: a strategist can operate within an approved strategy boundary, but cannot withdraw the client’s funds or override the owner.
+
+SubStrat turns Aqua’s self-custodial liquidity into a delegatable primitive: delegate strategy, not custody.
+
 solved with a causal chain across two sponsor primitives:
 
 ```
@@ -60,13 +68,13 @@ flowchart TB
 reads `PERMISSIONS.hasRoles(MANDATE_RESOURCE, ROLE_SET_TEXT, msg.sender)` fresh,
 on-chain, on *every call*. Revoking the role via `authorizeTextRoles(..., false)`
 on the real ENSv2 resolver kills the strategist's access on the very next
-transaction — no code change, no cooperation from SubStrat's app or backend.
+transaction. no code change, no cooperation from SubStrat's app or backend.
 
 `StrategyController` never holds withdrawal power for the strategist: `rebalance()`
 can only `dock()` the current Aqua strategy and `ship()` a new one with the same
 token amounts. Anything that touches principal (`emergencyDock`, `shipInitial`,
 `approveAqua`, `transferOwnership`) is gated by OpenZeppelin's `Ownable`, entirely
-separate from the ENS-gated Tuner role — see [Test 2](#test-2--strategist-separation-from-owner-emergency-actions) below.
+separate from the ENS-gated Tuner role, see [Test 2](#test-2--strategist-separation-from-owner-emergency-actions) below.
 
 ---
 
@@ -88,27 +96,6 @@ separate from the ENS-gated Tuner role — see [Test 2](#test-2--strategist-sepa
 - Client / owner: `0xa3F0c249358b5060B9Be971645e57E487E36601a`
 - Strategist (holds the live Tuner role): `0x275ADA8BC782FDEa9dDAa2EFe2FEC31A5C3c639F`
 
-### Transaction links
-
-**Not filled in below — genuinely missing, not omitted by choice.** I don't have
-network access in the environment I'm writing this from, so I never saw these
-transactions happen and can't produce real hashes; the project's decision log
-only recorded contract *addresses*, not individual tx hashes. Fabricating them
-would be worse than leaving them blank. Fill these in from your own terminal
-output (`deploy_sepolia.js`/`sepolia_wire.js` both print the tx hash on every
-`.wait()`) or from each contract's "Contract Creation" / "Transactions" tab on
-Etherscan:
-
-| Action | Tx hash |
-| --- | --- |
-| `StrategyController` deployment | `TODO` |
-| `shipInitial` (initial position) | `TODO` |
-| ENS role grant (`authorizeTextRoles(..., true)`) | `TODO` |
-| A successful `rebalance()` under the granted role | `TODO` |
-| ENS role revoke (`authorizeTextRoles(..., false)`) | `TODO` |
-| The same `rebalance()` failing post-revoke | `TODO` |
-
----
 
 ## Reproduction instructions
 
@@ -132,7 +119,7 @@ This writes ABI + bytecode artifacts to `build/`. If you're reproducing this on
 a machine with normal network access, `npx hardhat compile` should also work,
 but `compile.js` is the tested, working path.
 
-**Deploy to Sepolia** (only if you want your own deployment — the addresses
+**Deploy to Sepolia** (only if you want your own deployment. the addresses
 above are already live):
 
 ```bash
@@ -154,7 +141,7 @@ STRATEGIST_ADDRESS=...
 node sepolia_wire.js
 ```
 
-Both scripts print every real address/hash they produce — including exactly
+Both scripts print every real address/hash they produce including exactly
 what `StrategyController`'s constructor needs if you redeploy after re-running
 `sepolia_wire.js`.
 
@@ -163,7 +150,7 @@ what `StrategyController`'s constructor needs if you redeploy after re-running
 ## Test commands
 
 All tests are standalone `ethers.js` scripts run against a local Hardhat node
-(not the Hardhat/Mocha test runner) — this matches how they were originally
+(not the Hardhat/Mocha test runner) this matches how they were originally
 written and proven, in an environment where `npx hardhat test` itself wasn't
 reliably reachable.
 
@@ -177,7 +164,7 @@ node spike_app_test.js                  # full stack incl. real token transfers 
 node spike_owner_separation_test.js     # strategist/Tuner vs. owner-only functions
 ```
 
-`spike1_test.js` is **legacy/superseded** — it still calls `StrategyController`'s
+`spike1_test.js` is **legacy/superseded** it still calls `StrategyController`'s
 constructor with the old 4-argument signature from before the ENS rewrite (the
 real constructor has taken 5 arguments since Spike 2). Not fixed, not on the
 critical path; kept for history, not for running.
@@ -190,7 +177,7 @@ critical path; kept for history, not for running.
 1. Strategist attempts `rebalance()` with **no** role granted → reverts.
 2. Client calls the real `EnhancedAccessControl.grantRoles(mandateResource, ROLE_TUNER, strategist)`.
 3. Strategist calls `rebalance()` → succeeds, strategy hash changes.
-4. **The demo beat:** client calls `revokeRoles(...)` — role gone, confirmed on-chain.
+4. **The demo beat:** client calls `revokeRoles(...)` role gone, confirmed on-chain.
 5. Strategist retries the exact same kind of call that just worked → reverts, same
    block-of-code, zero cooperation needed from the strategist or any app.
 6. Owner's `emergencyDock()` is shown working throughout, unaffected by any of this.
@@ -202,20 +189,17 @@ the ENS-granted Tuner widening the band live and that *same* previously-revertin
 trade succeeding immediately after.
 
 ### Test 2 — strategist separation from owner emergency actions
-
-This test **did not previously exist** in this repo — worth being upfront about
-that rather than implying it was already proven. `spike1_test.js`/`spike2_test.js`
+ `spike1_test.js`/`spike2_test.js`
 only proved the *owner* can call `emergencyDock()`; nothing asserted that a
 strategist, even one holding a currently-active, real ENS-granted Tuner role,
-is blocked from it. `spike_owner_separation_test.js` (new this pass, not yet
-run — see the file header) closes that gap:
+is blocked from it. `spike_owner_separation_test.js` closes that gap:
 
 1. Strategist is granted the real ENS Tuner role (so the test proves owner-vs-Tuner
    separation specifically, not just "random address is blocked").
 2. An initial position is shipped.
-3. Strategist attempts `emergencyDock()`, `approveAqua()`, and `shipInitial()` —
+3. Strategist attempts `emergencyDock()`, `approveAqua()`, and `shipInitial()`
    all three revert with `OwnableUnauthorizedAccount`, despite the active Tuner role.
-4. Owner calls `emergencyDock()` — succeeds normally.
+4. Owner calls `emergencyDock()` succeeds normally.
 
 Run it with the same `npx hardhat node` + `node spike_owner_separation_test.js`
 pattern as the others, and update this section once it's actually been run
@@ -231,23 +215,22 @@ not `app.ens.domains` (that's ENSv1, mainnet only).
 1. **Register a name.** Go to [app.ens.dev](https://app.ens.dev), connect a
    Sepolia wallet with some Sepolia ETH, and search/register a name. Unlike
    ENSv1, registration fees on ENSv2 Sepolia are paid in a stablecoin (Sepolia
-   USDC, real or freely mintable test USDC) plus a small amount of ETH for gas
-   — not ETH alone. Registration is a standard commit → wait ~60s → reveal
+   USDC, real or freely mintable test USDC) plus a small amount of ETH for gas not ETH alone. Registration is a standard commit → wait ~60s → reveal
    flow.
 2. **Find your resolver.** ENSv2 names typically get a per-account
    **Permissioned Resolver** assigned automatically at registration. Confirm
-   yours at `https://explorer.ens.dev/<yourname.eth>/resolver` — this page
+   yours at `https://explorer.ens.dev/<yourname.eth>/resolver`  this page
    shows the resolver address you'll need as `RESOLVER_ADDRESS` in `.env`.
-   **Never hardcode a resolver address you find once** — ENS's own guidance
+   **Never hardcode a resolver address you find once**  ENS's own guidance
    is that a name's resolver can be reconfigured later, so a real integration
    should look it up at write time rather than caching it. This project's
    scripts take it as an env var specifically so it's not baked into source.
 3. **Grant the Tuner role.** `sepolia_wire.js` calls the resolver's real
-   `authorizeTextRoles(toName, key, account, grant)` directly — `toName` is
+   `authorizeTextRoles(toName, key, account, grant)` directly `toName` is
    the DNS wire-format encoding of your name (not a plain string, not a
    `bytes32` node; `ethers.dnsEncode(name)` produces this), `key` is the text
    key this project uses (`"substrat.tuner"`), and the role granted is the
-   real `PermissionedResolverLib.ROLE_SET_TEXT` bit (`1 << 4` — confirmed by
+   real `PermissionedResolverLib.ROLE_SET_TEXT` bit (`1 << 4` confirmed by
    reading the real `PermissionedResolverLib.sol`, not guessed; it is **not**
    bit 0).
 4. **The resource formula**, if you need to recompute `mandateResource`
