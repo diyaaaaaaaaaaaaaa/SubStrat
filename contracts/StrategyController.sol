@@ -79,7 +79,7 @@ contract StrategyController is Ownable {
     ///         `PERMISSIONS` on every call -- a revocation takes effect on the very next
     ///         transaction, with nothing here needing to be told about it.
     function rebalance(bytes calldata newStrategyData, uint256[] calldata newAmounts) external {
-        if (!PERMISSIONS.hasRoles(MANDATE_RESOURCE, SubStratRoles.ROLE_TUNER, msg.sender)) {
+        if (!PERMISSIONS.hasRoles(MANDATE_RESOURCE, SubStratRoles.ROLE_SET_TEXT, msg.sender)) {
             revert NotAuthorizedTuner(msg.sender);
         }
         if (currentStrategyHash == bytes32(0)) {

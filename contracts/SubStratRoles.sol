@@ -2,10 +2,15 @@
 pragma solidity 0.8.30;
 
 /// @dev Role bitmap constants for SubStrat's use of ENSv2's Enhanced Access Control.
-///      Follows the exact same bitmap convention ENSv2's own contracts use (regular role
-///      at bit N, its admin counterpart at bit N+128) so this is a drop-in match for the
-///      real Permissioned Resolver's role layout, not a bespoke scheme.
+///
+///      ROLE_SET_TEXT is not an arbitrary bit we picked -- it is the EXACT role bit
+///      the real ENSv2 Permissioned Resolver uses for "may set this text record"
+///      (confirmed directly from `PermissionedResolverLib.sol`: `ROLE_SET_TEXT = 1 << 4`).
+///      By reusing the same bit and the same `resource = keccak256(node, part)` formula
+///      here, our local `SubStratPermissions` stand-in is bit-for-bit compatible with the
+///      real resolver -- pointing `StrategyController` at a live Sepolia name's actual
+///      resolver later requires changing only the contract address, not this constant.
 library SubStratRoles {
-    uint256 internal constant ROLE_TUNER = 1 << 0;
-    uint256 internal constant ROLE_TUNER_ADMIN = ROLE_TUNER << 128;
+    uint256 internal constant ROLE_SET_TEXT = 1 << 4;
+    uint256 internal constant ROLE_SET_TEXT_ADMIN = ROLE_SET_TEXT << 128;
 }

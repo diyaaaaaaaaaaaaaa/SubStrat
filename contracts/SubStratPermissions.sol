@@ -16,13 +16,13 @@ import { SubStratRoles } from "./SubStratRoles.sol";
 ///
 ///      This contract itself is not a mock of ENS's access control -- it *is* ENS's real
 ///      `EnhancedAccessControl.sol`, imported unmodified from `ensdomains/contracts-v2`,
-///      with one concrete role defined on top (`ROLE_TUNER`), the same pattern any ENSv2
+///      with one concrete role defined on top (`ROLE_SET_TEXT`, matching the real ENSv2
 ///      contract (including the Permissioned Resolver) uses to define its own roles.
 contract SubStratPermissions is EnhancedAccessControl {
     constructor(address admin) {
         // Mirrors exactly how ENSv2's own PermissionedResolver.initialize() bootstraps its
         // first admin: _grantRoles(ROOT_RESOURCE, roleBitmap, admin, false).
-        _grantRoles(ROOT_RESOURCE, SubStratRoles.ROLE_TUNER_ADMIN, admin, false);
+        _grantRoles(ROOT_RESOURCE, SubStratRoles.ROLE_SET_TEXT_ADMIN, admin, false);
     }
 
     /// @notice Computes an EAC resource exactly as ENSv2's Permissioned Resolver does for a
